@@ -3,7 +3,7 @@ namespace app\api\controller\v1;
 
 use think\Controller;
 use think\Db;
-use think\Validate;
+// use think\Validate;
 use app\api\validate\TestValidate;
 
 class Banner extends Controller{
