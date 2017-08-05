@@ -1,10 +1,12 @@
 <?php
 namespace app\api\controller\v1;
 
+use think\Controller;
 use think\Db;
 use think\Validate;
+use app\api\validate\TestValidate;
 
-class Banner{
+class Banner extends Controller{
     /**
      * [getBanner 获取指定id的banner信息]
      * @url /banner/:id     [访问接口的路径]
@@ -15,9 +17,13 @@ class Banner{
         $data=[
             'id'=>$id,
         ];
-        $validate=new Validate([
-            'id'=>'require|number',
-        ]);
+        // $validate=new Validate([
+        //     'id'=>'require|number',
+        // ]);
+
+        // $validate=new TestValidate();//验证器
+        $validate=validate('TestValidate');//助手函数验证器
+
 
         if(!$validate->check($data)){
             return $validate->getError();
