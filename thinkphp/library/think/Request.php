@@ -60,6 +60,11 @@ class Request
     protected $routeInfo = [];
 
     /**
+     * @var array 环境变量
+     */
+    protected $env;
+
+    /**
      * @var array 当前调度信息
      */
     protected $dispatch = [];
@@ -1604,7 +1609,7 @@ class Request
     /**
      * 设置当前请求绑定的对象实例
      * @access public
-     * @param string $name 绑定的对象标识
+     * @param string|array $name 绑定的对象标识
      * @param mixed  $obj 绑定的对象实例
      * @return mixed
      */
