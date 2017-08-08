@@ -2,7 +2,7 @@
 namespace app\api\validate;
 use think\Validate;
 
-class TestValidate extends Validate{
+class IdPositiveInt extends BaseValidate{
     // 验证规则
     protected $rule=[
         'id'=>'require|positiveInteger',
