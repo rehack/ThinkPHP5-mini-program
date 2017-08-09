@@ -20,27 +20,17 @@ class Banner{
 
         (new IdPositiveInt())->doCheck();//验证id必须是正整数
 
-        /*$data=[
-            'id'=>$id,
-        ];
-
-        // $validate=new TestValidate();//验证器
-        $validate=validate('TestValidate');//助手函数验证器
-
-
-        if(!$validate->check($data)){
-            return $validate->getError();
-            exit;
-
-        }*/
-        /*$banner=Db::table('banner')->find($id);
-        dump($banner);*/
-        $banner=BannerModel::getBannerById($id);
+        $banner=BannerModel::getBannerById($id);//查询数据
         if(!$banner){
-            // throw new BannerMissException();//抛出异常
-            throw new Exception('内部错误');//抛出异常
+            throw new BannerMissException();//抛出异常
         }
-        return $banner;
+        return json($banner);
+
+
+
+
+
+
 
         /*
         异常处理流程

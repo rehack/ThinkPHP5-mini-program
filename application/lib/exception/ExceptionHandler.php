@@ -1,7 +1,7 @@
 <?php
 namespace app\lib\exception;
 
-use Exception;
+use Exception;//这里不能使用think\Exception;
 use think\exception\Handle;
 use think\Request;
 use think\Log;
