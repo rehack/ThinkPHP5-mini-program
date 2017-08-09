@@ -4,12 +4,14 @@ use think\Exception;
 
 class Banner{
     public static function getBannerById($id){
-        try {
+        /*try {
             1 / 0;
         } catch (Exception $e) {
             throw $e;
         }
 
-        return 'sdasd';
+        return 'sdasd';*/
+
+        return null;
     }
 }

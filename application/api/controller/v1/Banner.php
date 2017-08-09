@@ -6,6 +6,7 @@ namespace app\api\controller\v1;
 // use think\Validate;
 use app\api\validate\IdPositiveInt;
 use think\Exception;
+use app\lib\exception\BannerMissException;
 
 use app\api\model\Banner as BannerModel;
 class Banner{
@@ -34,18 +35,25 @@ class Banner{
         }*/
         /*$banner=Db::table('banner')->find($id);
         dump($banner);*/
+        $banner=BannerModel::getBannerById($id);
+        if(!$banner){
+            // throw new BannerMissException();//抛出异常
+            throw new Exception('内部错误');//抛出异常
+        }
+        return $banner;
 
-
-        try {
+        /*
+        异常处理流程
+         try {
             $banner=BannerModel::getBannerById($id);
         } catch (Exception $e) {
             $err=[
                 'error_code'=>1001,
                 'msg'=>$e->getMessage()
             ];
-            return json($err,400);
+            return json($err,400);//返回错误信息和指定状态码
         }
-        return $banner;
+        return $banner;*/
 
     }
 }

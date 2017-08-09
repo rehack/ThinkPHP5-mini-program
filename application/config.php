@@ -16,7 +16,7 @@ return [
 
     // 应用命名空间
     'app_namespace'          => 'app',
-    // 应用调试模式
+    // 应用调试模式 上线后要关闭
     'app_debug'              => true,
     // 应用Trace
     'app_trace'              => false,
@@ -158,7 +158,8 @@ return [
     // 显示错误信息
     'show_error_msg'         => false,
     // 异常处理handle类 留空使用 \think\exception\Handle
-    'exception_handle'       => '',
+    // 'exception_handle'       => '',
+    'exception_handle'       => 'app\lib\exception\ExceptionHandler',
 
     // +----------------------------------------------------------------------
     // | 日志设置
@@ -166,7 +167,8 @@ return [
 
     'log'                    => [
         // 日志记录方式，内置 file socket 支持扩展
-        'type'  => 'File',
+        // 'type'  => 'File',
+        'type'  => 'test',//用这种方式关闭tp的日志写入功能
         // 日志保存目录
         'path'  => LOG_PATH,
         // 日志记录级别
