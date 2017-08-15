@@ -20,11 +20,15 @@ class Banner{
 
         (new IdPositiveInt())->doCheck();//验证id必须是正整数
 
-        $banner=BannerModel::getBannerById($id);//查询数据
+        // $banner=BannerModel::with(['items','items.img'])->find($id);//查询数据
+        $banner=BannerModel::getBannerById($id);
+        // $banner=$banner->hidden(['update_time','items.delete_time']);//隐藏指定的字段
+
         if(!$banner){
             throw new BannerMissException();//抛出异常
         }
         return json($banner);
+        // dump($banner);
 
 
 
