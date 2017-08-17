@@ -5,6 +5,8 @@ namespace app\api\controller\v1;
 // use think\Db;
 // use think\Validate;
 use app\api\validate\IdCollection;
+use app\api\model\Theme as ThemeModel;
+use app\lib\exception\ThemeException;
 // 首页专题
 class Theme{
 
@@ -15,6 +17,15 @@ class Theme{
      */
     public function getSimpleList($ids=''){
         (new IdCollection())->doCheck();
-        return 'ok';
+        $ids=explode(',',$ids);
+        // dump($ids);
+        $result=ThemeModel::with('topicImg,headImg')
+            ->select($ids);
+
+        if(!$result){
+            throw new ThemeException();
+        }
+        return json($result);
+
     }
 }

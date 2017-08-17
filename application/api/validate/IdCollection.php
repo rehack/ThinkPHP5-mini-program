@@ -6,8 +6,9 @@ class IdCollection extends BaseValidate{
         'ids'=>'require|checkIds',
     ];
 
-    protected $msg=[
-        'ids'=>'ids必须是以逗号分隔的正整数'
+    protected $message=[
+        'ids.require'=>'ids参数必须传',
+        'ids.checkIds'=>'ids必须是以逗号分隔的正整数'
     ];
 
     protected function checkIds($value){
@@ -19,8 +20,7 @@ class IdCollection extends BaseValidate{
             if(!$this->positiveInteger($id)){
                 return false;
             }
-
-            return true;
         }
+        return true;
     }
 }
