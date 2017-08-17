@@ -29,5 +29,8 @@ use think\Route;
 // Route::any('hello','sample/test/hello');
 
 
-
+// banner接口路由
 Route::get('api/:version/banner/:id','api/:version.Banner/getBanner');
+
+// 专题接口路由
+Route::get('api/:version/theme/','api/:version.Theme/getSimpleList');
