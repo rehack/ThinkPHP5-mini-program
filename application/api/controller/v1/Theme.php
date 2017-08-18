@@ -5,12 +5,13 @@ namespace app\api\controller\v1;
 // use think\Db;
 // use think\Validate;
 use app\api\validate\IdCollection;
+use app\api\validate\IdPositiveInt;
 use app\api\model\Theme as ThemeModel;
 use app\lib\exception\ThemeException;
 // 首页专题
 class Theme{
 
-    // 获取专题列表
+    // 获取专题列表接口
     /*
         @url /theme?ids=1,2,3...
         @return 一组theme模型
@@ -25,7 +26,22 @@ class Theme{
         if(!$result){
             throw new ThemeException();
         }
+        // dump($result);
         return json($result);
 
+    }
+
+
+    /*
+        获取专题内容接口
+        @url /theme/:id
+     */
+    public function getComplexOne($id){
+        (new IdPositiveInt())->doCheck();
+        $result=ThemeModel::getThemeWithProducts($id);
+        if(!$result){
+            throw new ThemeException();
+        }
+        return $result;
     }
 }

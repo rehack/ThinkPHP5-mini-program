@@ -17,3 +17,6 @@ class Banner extends Base{
         return $banner;
     }
 }
+
+// $this和self的区别
+// $this是指向继承的父类，self是指当前的类

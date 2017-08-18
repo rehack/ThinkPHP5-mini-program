@@ -34,3 +34,6 @@ Route::get('api/:version/banner/:id','api/:version.Banner/getBanner');
 
 // 专题接口路由
 Route::get('api/:version/theme/','api/:version.Theme/getSimpleList');
+
+// 专题内容接口路由  需要在配置里开启路由完整匹配模式
+Route::get('api/:version/theme/:id','api/:version.Theme/getComplexOne');
