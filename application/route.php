@@ -46,3 +46,6 @@ Route::get('api/:version/product/category','api/:version.Product/getAllInCategor
 
 //所有分类接口
 Route::get('api/:version/category/all','api/:version.Category/getAllCategories');
+
+//
+Route::post('api/:version/token/user','api/:version.Token/getToken');//用post是为了不让code参数在url里显示出来

@@ -1,0 +1,69 @@
+<?php
+namespace app\api\service;
+use app\lib\exception\WechatException;
+use think\Exception;
+use app\api\model\User as UserModel;
+// service是model的分层 用来处理较为复杂的业务逻辑
+class UserToken{
+    protected $code;
+    protected $wxAppID;
+    protected $wxAppSecret;
+    protected $wxLoginUrl;
+
+    function __construct($code){
+        $this->code=$code;
+        $this->wxAppID=config('wechat.app_id');
+        $this->wxAppSecret=config('wechat.app_secret');
+        $this->wxLoginUrl=sprintf(config('wechat.login_url'),$this->wxAppID,$this->wxAppSecret,$this->code);
+    }
+
+    public function get(){
+        $result=curl_get($this->wxLoginUrl);
+        // $result=curl_get('https://api.weixin.qq.com/sns/jscode2session?appid=wxb87146459a7b65ac&secret=f9c25252b1ab037df78490192e23cf0c&js_code=081gLPdY0t2UgZ1bMKdY0JmPdY0gLPdC&grant_type=authorization_code');
+        $wxResult=json_decode($result,true);//将json格式字符串转换成数组格式
+        if(empty($wxResult)){
+            throw new Exception('获取session_key和openID时异常，微信内部错误');//此异常不会返回到客户端去
+        }else{
+            $loginFail=array_key_exists('errcode', $wxResult);
+            if($loginFail){
+                //如果返回的数据里存在errcode说明调用微信接口失败
+                $this->processLoginError($wxResult);
+            }else{
+                dump($this->grantToken($wxResult));
+            }
+        }
+    }
+
+    // 处理微信接口调用异常 单独写一个方法方便以后扩展 如记录日志、发送邮件
+    private function processLoginError($wxResult){
+        throw new WechatException([
+            'msg'=>$wxResult['errmsg'],
+            'errorCode'=>$wxResult['errcode']
+        ]);
+    }
+
+    // 授权令牌
+    private function grantToken($wxResult){
+        // 1.拿到openid
+        // 2.到数据库里看一下这个openid是不是已经存在（如果存在则不处理，如果不存在就新增一条user记录）
+        // 3.生成令牌，准备缓存数据，写入缓存
+        // 4.把令牌返回到客户端
+
+        // return $wxResult;
+        $openid=$wxResult['openid'];
+        $user=UserModel::getByOpenID($openid);
+        if($user){
+            $uid=$user->id;
+        }else{
+            $uid=$this->addUser($openid);
+        }
+    }
+
+    // 新增用户
+    private function addUser($openid){
+        $user=UserModel::create([
+            'openid'=>$openid,
+        ]);
+        return $user->id;//返回插入成功的记录的id
+    }
+}

@@ -34,6 +34,7 @@ class Product{
 
 
     /*
+        根据category id 获取此分类的产品接口
         url /product/category?id=3
      */
     public function getAllInCategory($id){
