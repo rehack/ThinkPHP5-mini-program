@@ -37,3 +37,12 @@ Route::get('api/:version/theme/','api/:version.Theme/getSimpleList');
 
 // 专题内容接口路由  需要在配置里开启路由完整匹配模式
 Route::get('api/:version/theme/:id','api/:version.Theme/getComplexOne');
+
+// 最新产品接口路由
+Route::get('api/:version/product/recent','api/:version.Product/getNewProducts');
+
+// 获取指定分类id下面的产品
+Route::get('api/:version/product/category','api/:version.Product/getAllInCategory');
+
+//所有分类接口
+Route::get('api/:version/category/all','api/:version.Category/getAllCategories');

@@ -22,7 +22,7 @@ class Theme{
         // dump($ids);
         $result=ThemeModel::with('topicImg,headImg')
             ->select($ids);
-
+        // dump($result);die;//数组
         if(!$result){
             throw new ThemeException();
         }
@@ -39,9 +39,11 @@ class Theme{
     public function getComplexOne($id){
         (new IdPositiveInt())->doCheck();
         $result=ThemeModel::getThemeWithProducts($id);
+        // dump($result);die;//模型对象实例
         if(!$result){
             throw new ThemeException();
         }
+        // $result->hidden(['name','id']);//模型对象实例方法
         return $result;
     }
 }
