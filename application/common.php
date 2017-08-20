@@ -32,3 +32,16 @@ function curl_get($url, &$httpCode=0)
     curl_close($ch);
     return $file_contents;
 }
+
+// 得到指定长度的随机字符串
+function getRandChar($length=32){
+    $str = null;
+    $strPol = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+    $max = strlen($strPol)-1;
+
+    for($i=0;$i<$length;$i++){
+        $str.=$strPol[rand(0,$max)];//rand($min,$max)生成介于min和max两个数之间的一个随机整数
+    }
+
+    return $str;
+}

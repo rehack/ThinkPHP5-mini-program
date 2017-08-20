@@ -3,8 +3,10 @@ namespace app\api\service;
 use app\lib\exception\WechatException;
 use think\Exception;
 use app\api\model\User as UserModel;
+use app\lib\exception\TokenException;
+
 // service是model的分层 用来处理较为复杂的业务逻辑
-class UserToken{
+class UserToken extends Token{
     protected $code;
     protected $wxAppID;
     protected $wxAppSecret;
@@ -29,7 +31,7 @@ class UserToken{
                 //如果返回的数据里存在errcode说明调用微信接口失败
                 $this->processLoginError($wxResult);
             }else{
-                dump($this->grantToken($wxResult));
+                return $this->grantToken($wxResult);
             }
         }
     }
@@ -46,7 +48,7 @@ class UserToken{
     private function grantToken($wxResult){
         // 1.拿到openid
         // 2.到数据库里看一下这个openid是不是已经存在（如果存在则不处理，如果不存在就新增一条user记录）
-        // 3.生成令牌，准备缓存数据，写入缓存
+        // 3.生成令牌，准备缓存数据，写入缓存（key:令牌   value：wxResult,uid,scope）
         // 4.把令牌返回到客户端
 
         // return $wxResult;
@@ -57,6 +59,11 @@ class UserToken{
         }else{
             $uid=$this->addUser($openid);
         }
+
+        $cachedValue=$this->prepareCachedValue($wxResult,$uid);
+
+        $token=$this->saveToCache($cachedValue);
+        return $token;
     }
 
     // 新增用户
@@ -65,5 +72,31 @@ class UserToken{
             'openid'=>$openid,
         ]);
         return $user->id;//返回插入成功的记录的id
+    }
+
+    // 准备缓存
+    private function prepareCachedValue($wxResult,$uid){
+        $cachedValue=$wxResult;
+        $cachedValue['uid']=$uid;
+        $cachedValue['scope']=16;//数字越大访问的权限越大
+        return $cachedValue;
+    }
+
+    // 写入缓存
+    private function saveToCache($cachedValue){
+        $key=self::generateToken();//调用基类方法生成令牌
+        $value=json_encode($cachedValue);//将数据转换成字符串
+        $expire_in=config('setting.token_expire_in');//缓存过期时间
+
+        $request=cache($key,$value,$expire_in);//写入缓存
+        if(!$request){
+            throw new TokenException([
+                'msg'=>'服务器缓存异常',
+                'errorCode'=>10005
+            ]);
+        }
+
+        // 将令牌返回到客户端
+        return $key;
     }
 }
