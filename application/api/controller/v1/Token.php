@@ -8,13 +8,13 @@ class Token{
         (new TokenGet())->doCheck();
         $ut=new UserToken($code);
         $token=$ut->get();
-        /*return json([
+        return json([
             'token'=>$token
-        ]);*/
+        ]);
 
-        return [
+        /*return [
             'token'=>$token
-        ];
+        ];*/
     }
 
 }

@@ -255,9 +255,11 @@ class Route
                     $option1  = array_merge($option, $val[1]);
                     $pattern1 = array_merge($pattern, isset($val[2]) ? $val[2] : []);
                 } else {
-                    $route = $val;
+                    $option1  = null;
+                    $pattern1 = null;
+                    $route    = $val;
                 }
-                self::setRule($key, $route, $type, isset($option1) ? $option1 : $option, isset($pattern1) ? $pattern1 : $pattern, $group);
+                self::setRule($key, $route, $type, !is_null($option1) ? $option1 : $option, !is_null($pattern1) ? $pattern1 : $pattern, $group);
             }
         } else {
             self::setRule($rule, $route, $type, $option, $pattern, $group);
@@ -1510,12 +1512,13 @@ class Route
         if ($request->isGet() && isset($option['cache'])) {
             $cache = $option['cache'];
             if (is_array($cache)) {
-                list($key, $expire) = $cache;
+                list($key, $expire, $tag) = array_pad($cache, 3, null);
             } else {
                 $key    = str_replace('|', '/', $pathinfo);
                 $expire = $cache;
+                $tag    = null;
             }
-            $request->cache($key, $expire);
+            $request->cache($key, $expire, $tag);
         }
         return $result;
     }
