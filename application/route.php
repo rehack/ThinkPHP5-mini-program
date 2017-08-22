@@ -38,14 +38,29 @@ Route::get('api/:version/theme/','api/:version.Theme/getSimpleList');
 // 专题内容接口路由  需要在配置里开启路由完整匹配模式
 Route::get('api/:version/theme/:id','api/:version.Theme/getComplexOne');
 
-// 最新产品接口路由
-Route::get('api/:version/product/recent','api/:version.Product/getNewProducts');
 
-// 获取指定分类id下面的产品
-Route::get('api/:version/product/category','api/:version.Product/getAllInCategory');
+// 路由分组
+Route::group('api/:version/product',function(){
+    // 获取指定分类id下面的产品
+    Route::get('/category','api/:version.Product/getAllInCategory');
 
-//所有分类接口
+    //获取指定商品详情接口  只有id是正整数才会匹配此路由
+    Route::get('/:id','api/:version.Product/getProDetail',[],['id'=>'\d+']);
+
+    // 最新产品接口路由
+    Route::get('/recent','api/:version.Product/getNewProducts');
+});
+
+
+
+
+
+//所有商品分类接口
 Route::get('api/:version/category/all','api/:version.Category/getAllCategories');
 
-//
-Route::post('api/:version/token/user','api/:version.Token/getToken');//用post是为了不让code参数在url里显示出来
+//用post是为了不让code参数在url里显示出来
+Route::post('api/:version/token/user','api/:version.Token/getToken');
+
+
+//收货地址接口
+Route::post('api/:version/address','api/:version.Address/createOrUpdateAddress');

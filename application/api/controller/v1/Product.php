@@ -46,4 +46,19 @@ class Product{
         $products->hidden(['summary']);
         return $products;
     }
+
+    /**
+     * 获取商品详情接口
+     * @url   /product/11
+     * @param  [type] $id [description]
+     * @return  json     [description]
+     */
+    public function getProDetail($id){
+        (new IdPositiveInt())->doCheck();
+        $product=ProductModel::getProductDetail($id);
+        if(!$product){
+            throw new ProductException();
+        }
+        return $product;
+    }
 }

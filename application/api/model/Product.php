@@ -19,6 +19,19 @@ class Product extends Base{
         return $this->prefixImgUrl($value,$data);
     }
 
+    // 关联商品图片模型
+    public function imgs(){
+        return $this->hasMany('ProductImage','product_id','id');
+    }
+
+    // 关联商品参数模型
+    public function properties(){
+        return $this->hasMany('ProductProperty','product_id','id');
+    }
+
+
+
+
     // 获取最新产品
     public static function getRecent($count){
         $recents=self::limit($count)->order('create_time desc')->select();
@@ -30,4 +43,23 @@ class Product extends Base{
         $products=self::where('category_id','=',$categoryId)->select();
         return $products;
     }
+
+    // 获取商品详情
+    public static function getProductDetail($id){
+        /*$product=self::with(['imgs.imgUrl'])
+        ->with(['properties'])
+        ->find($id);
+        return $product;*/
+        // 改进 支持排序
+        $product=self::with([
+            'imgs'=>function($query){
+                $query->with('imgUrl')->order('order','asc');
+            }
+        ])
+        ->with(['properties'])
+        ->find($id);
+        return $product;
+    }
+
+
 }
