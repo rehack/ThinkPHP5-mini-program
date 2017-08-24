@@ -4,6 +4,7 @@ use app\lib\exception\WechatException;
 use think\Exception;
 use app\api\model\User as UserModel;
 use app\lib\exception\TokenException;
+use app\lib\enum\ScopeEnum;
 
 // service是model的分层 用来处理较为复杂的业务逻辑
 class UserToken extends Token{
@@ -78,7 +79,11 @@ class UserToken extends Token{
     private function prepareCachedValue($wxResult,$uid){
         $cachedValue=$wxResult;
         $cachedValue['uid']=$uid;
-        $cachedValue['scope']=16;//数字越大访问的权限越大
+
+
+        $cachedValue['scope']=ScopeEnum::User;//数字越大访问的权限越大
+        // $cachedValue['scope']=12;//数字越大访问的权限越大
+
         return $cachedValue;
     }
 

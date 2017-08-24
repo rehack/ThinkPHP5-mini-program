@@ -11,6 +11,16 @@ class AddressNew extends BaseValidate{
         'detail'=>'require|isNotEmpty',
     ];
 
+        // 测试数据
+    /*{
+        "name":"rehack",
+        "mobile":"13663220012",
+        "province":"四川",
+        "city":"成都",
+        "country":"金牛",
+        "detail":"万达"
+    }*/
+
     protected $message=[
         'count.positiveInteger'=>'count必须是正整数',
         // 'count.between'=>'count参数必须传',
