@@ -64,3 +64,7 @@ Route::post('api/:version/token/user','api/:version.Token/getToken');
 
 //收货地址接口
 Route::post('api/:version/address','api/:version.Address/createOrUpdateAddress');
+
+
+// 下单接口
+Route::post('api/:version/order','api/:version.Order/placeOrder');
