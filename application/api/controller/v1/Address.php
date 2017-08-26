@@ -6,11 +6,10 @@ use app\api\model\User as UserModel;
 use app\lib\exception\UserException;
 use app\lib\exception\SuccessMessage;
 use app\lib\enum\ScopeEnum;
-use think\Controller;
 use app\lib\exception\ForbiddenException;
 
 // 写入客户地址接口
-class Address extends Controller{
+class Address extends Base{
 
     //前置操作
     protected $beforeActionList=[
@@ -18,20 +17,7 @@ class Address extends Controller{
         'checkPrimaryScope'=>['only'=>'createOrUpdateAddress']
     ];
 
-    // 验证权限
-    protected function checkPrimaryScope(){
-        $scope=TokenService::getCurrentTokenVar('scope');
-        if($scope){
-            if($scope>=ScopeEnum::User){
-                return true;
-            }else{
-                throw new ForbiddenException();
-            }
-        }else{
-            throw new TokenException();
-        }
 
-    }
 
     /**
      * 需要一定的权限才能访问此接口

@@ -1,8 +1,25 @@
 <?php
 namespace app\api\controller\v1;
-use think\Controller;
+use app\api\service\Token as TokenService;
+use app\lib\enum\ScopeEnum;
+use app\lib\exception\ForbiddenException;
+use app\lib\exception\TokenException;
+use app\api\validate\OrderPlace;
 //下单接口
-class Order extends Controller{
+class Order extends Base{
+    // 定义前置操作
+    protected $beforeActionList=[
+        'checkExclusiveScope'=>['only'=>'placeOrder']
+    ];
+
+
+
+
+
+
+
+
+
     // 1.用户在选择好商品后，向API提交他选择的商品的相关信息
     // 2.API在接收到提交来的商品数据时，需要检测订单所包含的商品的库存量
     // 3.如果有库存，把订单的数据存入数据库中，下单成功了，给客户端返回可以支付了的消息
@@ -20,6 +37,6 @@ class Order extends Controller{
      * @return [type] [description]
      */
     public function placeOrder(){
-
+        (new OrderPlace())->doCheck();
     }
 }

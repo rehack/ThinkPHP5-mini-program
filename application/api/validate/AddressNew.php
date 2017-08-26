@@ -21,8 +21,4 @@ class AddressNew extends BaseValidate{
         "detail":"万达"
     }*/
 
-    protected $message=[
-        'count.positiveInteger'=>'count必须是正整数',
-        // 'count.between'=>'count参数必须传',
-    ];
 }
