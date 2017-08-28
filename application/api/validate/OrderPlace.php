@@ -4,7 +4,7 @@ use app\lib\exception\ParameterException;
 
 class OrderPlace extends BaseValidate{
 
-    /*[
+    /*$orderProducts=[
         [
             'product_id'=>1,
             'count'=>2
@@ -13,7 +13,7 @@ class OrderPlace extends BaseValidate{
             'product_id'=>2,
             'count'=>4
         ]
-    ];*///模拟数据结构
+    ];//模拟数据结构*/
 
 
     protected $rule=[

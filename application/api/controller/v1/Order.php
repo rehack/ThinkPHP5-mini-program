@@ -38,5 +38,7 @@ class Order extends Base{
      */
     public function placeOrder(){
         (new OrderPlace())->doCheck();
+        $products=input('post.products/a');//变量修饰符 强制转换为数组类型
+        $uid=TokenService::getCurrentUID();
     }
 }
