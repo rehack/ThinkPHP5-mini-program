@@ -2,6 +2,7 @@
 namespace app\api\service;
 use app\api\model\Product as ProductModel;
 use app\lib\exception\OrderException;
+use app\api\model\userAddress as userAddressModel;
 
 class Order{
     // 订单的商品列表 也就是客户端传过来的products参数
@@ -38,7 +39,15 @@ class Order{
         $this->orderProducts=$orderProducts;
         $this->products=$this->getProductsByOrder($orderProducts);
         $this->$uid=$uid;
+        $status=$this->getOrderStatus();
+        if(!$status['pass']){
+            // 如果库存量检测不通过
+            $status['order_id']=-1;
+            return $status;
+        }
 
+        // 开始创建订单
+        $orderSnap=$this->snapOrder();//创建订单快照
     }
 
     // 根据订单信息查询真实的商品信息
@@ -60,13 +69,23 @@ class Order{
     private function getOrderStatus(){
         $status=[
             'pass'=>true,
-            'orderPrice'=0,// 订单合计金额
-            'pStatusArray'=[]// 保存订单里面商品的详细信息
+            'orderPrice'=>0,// 订单合计金额
+            'totalCount'=>0,
+            'pStatusArray'=>[]// 保存订单里面商品的详细信息
         ];
 
         foreach ($this->orderProducts as $orderProduct) {
             $pStatus=$this->getProductStatus($orderProduct['product_id'],$orderProduct['count'],$this->products);
+
+            if(!$pStatus['havaStock']){
+                $status['pass']=false;
+            }
+            $status['orderPrice']+=$pStatus['totalPrice'];
+            $status['totalCount']+=$pStatus['count'];
+            array_push($status['tStatusArray'],$pStatus);
         }
+
+        return $status;
     }
 
     private getProductStatus($orderProductsIds,$orderCount,$products){
@@ -102,5 +121,38 @@ class Order{
 
         return $pStatus;
 
+    }
+
+
+    // 生成订单快照
+    private function snapOrder($status){
+        // 快照信息
+        $snap=[
+            'orderPrice'=>0,
+            'totalCount'=>0,
+            'pStatus'=>[],
+            'snapAddress'=>null,
+            'snapName'=>'',
+            'snapImg'=>'',
+        ];
+
+        $snap['orderPrice']=$status['orderPrice'];
+        $snap['totalCount']=$status['totalCount'];
+        $snap['pStatus']=$status['pStatusArray'];
+        $snap['snapAddress']=json_encode($this->getUserAddress());
+    }
+
+
+    // 获取用户收货地址
+    private function getUserAddress(){
+        $userAddress=userAddressModel::where('user_id',$this->uid)->find();
+        if(!$userAddress){
+            throw new UserException([
+                'msg'=>'用户收货地址不存在，下单失败',
+                'errorCode'=>60001
+            ]);
+        }
+
+        return $userAddress->toArray();
     }
 }
