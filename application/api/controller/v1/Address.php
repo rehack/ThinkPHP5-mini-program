@@ -42,7 +42,7 @@ class Address extends Base{
         }
 
         $dataArray=$validate->getDataByRule(input('post.'));//获取用户提交的地址信息
-
+        /*{"name":"rehack","mobile":"13544448876","province":"四川","city":"成都","country":"锦江","detail":"明宇"}*/
 
         $userAddress=$user->address;
         if(!$userAddress){

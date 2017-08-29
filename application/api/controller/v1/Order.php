@@ -5,6 +5,7 @@ use app\lib\enum\ScopeEnum;
 use app\lib\exception\ForbiddenException;
 use app\lib\exception\TokenException;
 use app\api\validate\OrderPlace;
+use app\api\service\Order as OrderService;
 //下单接口
 class Order extends Base{
     // 定义前置操作
@@ -40,5 +41,10 @@ class Order extends Base{
         (new OrderPlace())->doCheck();
         $products=input('post.products/a');//变量修饰符 强制转换为数组类型
         $uid=TokenService::getCurrentUID();
+
+        // dump($uid);die;
+        $order=new OrderService();
+        $status=$order->place($uid,$products);
+        // return $status;
     }
 }
