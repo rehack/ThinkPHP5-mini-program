@@ -90,7 +90,7 @@ class Order{
             $status['totalCount']+=$pStatus['count'];
             array_push($status['pStatusArray'],$pStatus);
         }
-
+        // dump($status);die;
         return $status;
     }
 
@@ -121,7 +121,7 @@ class Order{
             $pStatus['id']=$product['id'];
             $pStatus['count']=$orderCount;
             $pStatus['name']=$product['name'];
-            $pStatus['TotalPrice']=$product['price'] * $orderCount;
+            $pStatus['totalPrice']=$product['price'] * $orderCount;
             $pStatus['havaStock']=$product['stock'] - $orderCount>=0 ? true : flase;
         }
 
@@ -130,7 +130,7 @@ class Order{
     }
 
 
-    // 生成订单快照
+    // 准备订单快照数据
     private function snapOrder($status){
         // 快照信息
         $snap=[
@@ -148,6 +148,9 @@ class Order{
         $snap['snapAddress']=json_encode($this->getUserAddress());//将数组序列化成json字符串
         $snap['snapName']=count($this->products) > 1 ? $this->products[0]['name'].'等' : $this->products[0]['name'];
         $snap['snapImg']=$this->products[0]['main_img_url'];
+
+
+        return $snap;
     }
 
 
@@ -176,7 +179,7 @@ class Order{
 
         try {
             $orderNo=$this->makeOrderNo();//订单号
-            $order=new OrderModel($snap);
+            $order=new OrderModel();
             $order->user_id=$this->uid;
             $order->order_no=$orderNo;
             $order->total_price=$snap['orderPrice'];
@@ -186,12 +189,14 @@ class Order{
             $order->snap_address=$snap['snapAddress'];
             $order->snap_items=json_encode($snap['pStatus']);
 
+            // dump($order);die;
+
             $order->save();
 
             $orderID=$order->id;
             $create_time=$order->create_time;//下单时间
 
-            foreach ($orderProducts as &$p) {
+            foreach ($this->orderProducts as &$p) {
                 $p['order_id']=$orderID;
             }
 

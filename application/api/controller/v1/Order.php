@@ -45,6 +45,6 @@ class Order extends Base{
         // dump($uid);die;
         $order=new OrderService();
         $status=$order->place($uid,$products);
-        // return $status;
+        return json($status);
     }
 }
