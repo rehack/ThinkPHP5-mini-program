@@ -6,6 +6,7 @@ use app\api\model\UserAddress as UserAddressModel;
 use app\lib\exception\UserException;
 use app\api\model\Order as OrderModel;
 use app\api\model\OrderProduct as OrderProductModel;
+use think\Db;
 
 class Order{
     // 订单的商品列表 也就是客户端传过来的products参数
@@ -176,7 +177,7 @@ class Order{
 
     // 创建订单（将订单写入数据库）
     private function createOrder($snap){
-
+        Db::startTrans();// 启动事务
         try {
             $orderNo=$this->makeOrderNo();//订单号
             $order=new OrderModel();
@@ -193,6 +194,7 @@ class Order{
 
             $order->save();
 
+
             $orderID=$order->id;
             $create_time=$order->create_time;//下单时间
 
@@ -203,12 +205,21 @@ class Order{
             $orderProduct=new orderProductModel();
             $orderProduct->saveAll($this->orderProducts);
 
+            // 提交事务
+            Db::commit();
+
             return [
                 'order_no'=>$orderNo,
                 'order_id'=>$orderID,
                 'create_time'=>$create_time
             ];
+
+
         } catch (Exception $e) {
+            // 回滚事务
+            Db::rollback();
+
+            // 抛出异常
             throw $e;
         }
 
