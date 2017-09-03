@@ -68,3 +68,6 @@ Route::post('api/:version/address','api/:version.Address/createOrUpdateAddress')
 
 // 下单接口
 Route::post('api/:version/order','api/:version.Order/placeOrder');
+
+// 预定单接口
+Route::post('api/:version/pay/pre_order','api/:version.Pay/getPreOrder');

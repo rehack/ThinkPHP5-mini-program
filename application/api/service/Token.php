@@ -86,4 +86,18 @@ class Token
             throw new TokenException();
         }
     }
+
+    // 对外提供检测是否是合法的操作者的方法
+    public static function isValidOperate($checkedUID){
+        if(!$checkedUid){
+            throw new Exception('没有传入uid参数');
+        }
+
+        $currentOperateUID=self::getCurrentUID();
+
+        if($currentOperateUID==$checkedUID){
+            return true;//被检测的uid和当前uid一致
+        }
+        return false;
+    }
 }

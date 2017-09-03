@@ -224,4 +224,15 @@ class Order{
         }
 
     }
+
+
+    // 对外提供一个库存量检测的方法 通过订单id查询
+    public function checkOrderStock($orderId){
+        $orderProducts=OrderProductModel::where('order_id',$orderId)->select();
+
+        $this->orderProducts=$orderProducts;
+        $this->products=$this->getProductsByOrder($orderProducts);
+        $status=$this->getOrderStatus();
+        return $status;
+    }
 }
