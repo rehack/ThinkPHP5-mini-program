@@ -12,6 +12,7 @@
 namespace think\db;
 
 use PDO;
+use think\App;
 use think\Cache;
 use think\Collection;
 use think\Config;
@@ -114,6 +115,7 @@ class Query
     {
         $this->connection = Db::connect($config);
         $this->setBuilder();
+        $this->prefix = $this->connection->getConfig('prefix');
         return $this;
     }
 
@@ -1185,10 +1187,8 @@ class Query
             $this->options['multi'][$logic][$field][] = $where[$field];
         } elseif (is_null($condition)) {
             // 字段相等查询
-            $where[$field] = ['eq', $op];
-            if ('AND' != $logic) {
-                $this->options['multi'][$logic][$field][] = $where[$field];
-            }
+            $where[$field]                            = ['eq', $op];
+            $this->options['multi'][$logic][$field][] = $where[$field];
         } else {
             $where[$field] = [$op, $condition, isset($param[2]) ? $param[2] : null];
             if ('exp' == strtolower($op) && isset($param[2]) && is_array($param[2])) {
@@ -1445,18 +1445,19 @@ class Query
     /**
      * 查询缓存
      * @access public
-     * @param mixed   $key    缓存key
-     * @param integer $expire 缓存有效期
-     * @param string  $tag    缓存标签
+     * @param mixed             $key    缓存key
+     * @param integer|\DateTime $expire 缓存有效期
+     * @param string            $tag    缓存标签
      * @return $this
      */
     public function cache($key = true, $expire = null, $tag = null)
     {
         // 增加快捷调用方式 cache(10) 等同于 cache(true, 10)
-        if (is_numeric($key) && is_null($expire)) {
+        if ($key instanceof \DateTime || (is_numeric($key) && is_null($expire))) {
             $expire = $key;
             $key    = true;
         }
+
         if (false !== $key) {
             $this->options['cache'] = ['key' => $key, 'expire' => $expire, 'tag' => $tag];
         }
@@ -1490,7 +1491,7 @@ class Query
     /**
      * 指定查询lock
      * @access public
-     * @param boolean $lock 是否lock
+     * @param bool|string $lock 是否lock
      * @return $this
      */
     public function lock($lock = false)
@@ -2568,6 +2569,7 @@ class Query
      * @param string   $column   分批处理的字段名
      * @param string   $order    排序规则
      * @return boolean
+     * @throws \LogicException
      */
     public function chunk($count, $callback, $column = null, $order = 'asc')
     {
@@ -2581,8 +2583,14 @@ class Query
         if (is_array($column)) {
             $column = $column[0];
         }
+        if (isset($options['order'])) {
+            if (App::$debug) {
+                throw new \LogicException('chunk not support call order');
+            }
+            unset($options['order']);
+        }
         $bind      = $this->bind;
-        $resultSet = $this->limit($count)->order($column, $order)->select();
+        $resultSet = $this->options($options)->limit($count)->order($column, $order)->select();
         if (strpos($column, '.')) {
             list($alias, $key) = explode('.', $column);
         } else {
@@ -2601,7 +2609,7 @@ class Query
             $resultSet = $this->options($options)
                 ->limit($count)
                 ->bind($bind)
-                ->where($column, 'asc' == $order ? '>' : '<', $lastId)
+                ->where($column, 'asc' == strtolower($order) ? '>' : '<', $lastId)
                 ->order($column, $order)
                 ->select();
             if ($resultSet instanceof Collection) {

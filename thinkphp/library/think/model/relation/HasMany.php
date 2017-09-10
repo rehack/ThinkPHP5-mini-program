@@ -159,11 +159,11 @@ class HasMany extends Relation
         if ($closure) {
             call_user_func_array($closure, [ & $this->query]);
         }
-
+        $localKey = $this->localKey ?: $this->parent->getPk();
         return $this->query->where([
             $this->foreignKey => [
                 'exp',
-                '=' . $this->parent->getTable() . '.' . $this->parent->getPk(),
+                '=' . $this->parent->getTable() . '.' . $localKey,
             ],
         ])->fetchSql()->count();
     }
@@ -238,10 +238,15 @@ class HasMany extends Relation
      */
     public function has($operator = '>=', $count = 1, $id = '*', $joinType = 'INNER')
     {
-        $table = $this->query->getTable();
-        return $this->parent->db()->alias('a')
-            ->join($table . ' b', 'a.' . $this->localKey . '=b.' . $this->foreignKey, $joinType)
-            ->group('b.' . $this->foreignKey)
+        $table    = $this->query->getTable();
+        $model    = basename(str_replace('\\', '/', get_class($this->parent)));
+        $relation = basename(str_replace('\\', '/', $this->model));
+
+        return $this->parent->db()
+            ->alias($model)
+            ->field($model . '.*')
+            ->join($table . ' ' . $relation, $model . '.' . $this->localKey . '=' . $relation . '.' . $this->foreignKey, $joinType)
+            ->group($relation . '.' . $this->foreignKey)
             ->having('count(' . $id . ')' . $operator . $count);
     }
 
