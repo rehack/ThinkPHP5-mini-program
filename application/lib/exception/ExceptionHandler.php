@@ -58,12 +58,15 @@ class ExceptionHandler extends Handle{
 
     }
 
-
+    // 定义记录服务端错误日志方法
     private function recordErrorLog(Exception $e){
         // 日志初始化
         Log::init([
+            // 日志类型
             'type'=>'File',
+            // 日志的存储路径
             'path'=>LOG_PATH,
+            // 错误级别
             'level'=>['error']
         ]);
         Log::record($e->getMessage(),'error');//第一个参数是错误信息，第二个参数是错误级别
